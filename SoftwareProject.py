@@ -1,7 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 import ttkbootstrap as tb
-
+#Test
 
 # pil_logo1 = Image.open(r"C:/Users/rc3sk/OneDrive/Documents/School/Hangman Structure.png").resize((400, 400))
 
@@ -77,4 +77,5 @@ if __name__ == "__main__":
         "C:/Users/rc3sk/OneDrive/Documents/School/western-aesthetic.jpg"
 
     )
+
     app.mainloop()
