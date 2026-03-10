@@ -1,81 +1,140 @@
 import tkinter as tk
 from PIL import Image, ImageTk
-import ttkbootstrap as tb
-#Test
-
-# pil_logo1 = Image.open(r"C:/Users/rc3sk/OneDrive/Documents/School/Hangman Structure.png").resize((400, 400))
-
 
 class HangmanApp(tk.Tk):
-    def __init__(self, image_path):
+
+    def __init__(self, bg_path, hangman_paths, title_path):
         super().__init__()
 
-        self.title("Resizable Fade Background")
+        self.title("Western Hangman, YeeHaw!")
         self.geometry("800x600")
 
-        # Load original image once
-        self.original_image = Image.open(image_path).convert("RGBA")
+        # -------------------------
+        # Load Images
+        # -------------------------
+        self.bg_original = Image.open(bg_path).convert("RGBA")
+        self.title_original = Image.open(title_path).convert("RGBA")
 
+        self.hangman_original = [
+            Image.open(path).convert("RGBA") for path in hangman_paths
+        ]
+
+        self.stage = 0
+
+        # -------------------------
+        # Canvas
+        # -------------------------
         self.canvas = tk.Canvas(self, highlightthickness=0)
         self.canvas.pack(fill="both", expand=True)
 
-        # Canvas image placeholders
+        # -------------------------
+        # Canvas Image Layers
+        # -------------------------
         self.bg_item = self.canvas.create_image(0, 0, anchor="nw")
-        # self.fade_item = self.canvas.create_image(0, 0, anchor="nw")
+        self.title_item = self.canvas.create_image(0, 0, anchor="center")
+        self.hangman_item = self.canvas.create_image(0, 0, anchor="center")
 
-        self.current = 0
-        self.resized_base = None
-
-        # Detect window resize
+        # -------------------------
+        # Bind Resize
+        # -------------------------
         self.bind("<Configure>", self.on_resize)
 
-        # self.fade_in()
+        # -------------------------
+        # Bind Keys for testing
+        # -------------------------
+        for i in range(8):
+            self.bind(str(i+1), lambda e, s=i: self.change_stage(s))
 
-        # self.packers_logo = ImageTk.PhotoImage(pil_logo1)
-        # self.logo_label = tk.Label(root, image=self.packers_logo)
-        # self.logo_label.grid(row=1, column=0, pady=(15, 5))
 
-    # -----------------------------
-    # Resize images with window
-    # -----------------------------
     def on_resize(self, event):
+
         if event.width < 2 or event.height < 2:
             return
 
-        # Resize image to window
-        self.resized_base = self.original_image.resize(
+        # =========================
+        # Background
+        # =========================
+        resized_bg = self.bg_original.resize(
             (event.width, event.height),
             Image.LANCZOS
         )
 
-        # Background image
-        self.tk_bg = ImageTk.PhotoImage(self.resized_base)
+        self.tk_bg = ImageTk.PhotoImage(resized_bg)
         self.canvas.itemconfig(self.bg_item, image=self.tk_bg)
 
-    # -----------------------------
-    # Fade overlay image
-    # -----------------------------
-    # def fade_in(self):
-    #     if self.resized_base is not None and self.current_alpha <= 255:
+        # =========================
+        # Title
+        # =========================
+        title_width = int(event.width * 0.6)
+        title_height = int(event.height * 0.2)
 
-    #         temp = self.resized_base.copy()
-    #         temp.putalpha(self.current_alpha)
+        resized_title = self.title_original.resize(
+            (title_width, title_height),
+            Image.LANCZOS
+        )
 
-    #         self.tk_fade = ImageTk.PhotoImage(temp)
-    #         self.canvas.itemconfig(self.fade_item, image=self.tk_fade)
+        self.tk_title = ImageTk.PhotoImage(resized_title)
 
-    #         self.current_alpha += 5
+        self.canvas.itemconfig(self.title_item, image=self.tk_title)
 
-    #     self.after(20, self.fade_in)
+        self.canvas.coords(
+            self.title_item,
+            event.width // 2,
+            event.height // 6
+        )
 
+        # =========================
+        # Hangman Image
+        # =========================
+        hangman_size = int(min(event.width, event.height) * 0.4)
+
+        resized_hangman = self.hangman_original[self.stage].resize(
+            (hangman_size, hangman_size),
+            Image.LANCZOS
+        )
+
+        self.tk_hangman = ImageTk.PhotoImage(resized_hangman)
+
+        self.canvas.itemconfig(self.hangman_item, image=self.tk_hangman)
+
+        self.canvas.coords(
+            self.hangman_item,
+            event.width // 1.8,
+            event.height // 1.3
+        )
+
+
+    def change_stage(self, stage):
+        if 0 <= stage < len(self.hangman_original):
+            self.stage = stage
+
+            # get current window size
+            width = self.winfo_width()
+            height = self.winfo_height()
+
+            # manually update hangman image
+            hangman_size = int(min(width, height) * 0.4)
+
+            resized_hangman = self.hangman_original[self.stage].resize(
+                (hangman_size, hangman_size),
+                Image.LANCZOS
+            )
+
+            self.tk_hangman = ImageTk.PhotoImage(resized_hangman)
+
+            self.canvas.itemconfig(self.hangman_item, image=self.tk_hangman)
 
 if __name__ == "__main__":
 
-    # root = tb.Window()
+    hangman_stages = [
+        f"C:/Users/rc3sk/OneDrive/Documents/School/hangmanStage{i}.png"
+        for i in range(0, 8)
+    ]
 
     app = HangmanApp(
-        "C:/Users/rc3sk/OneDrive/Documents/School/western-aesthetic.jpg"
-
+        r"C:/Users/rc3sk/OneDrive/Documents/School/western-aesthetic.jpg",
+        hangman_stages,
+        r"C:/Users/rc3sk/OneDrive/Documents/School/Hangman-wordle App.png"
     )
 
     app.mainloop()
