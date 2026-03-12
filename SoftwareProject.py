@@ -192,11 +192,11 @@ class HangmanApp(tk.Tk):
     # =========================
 
     def winner_alert_and_close(self):
-        mbox.showinfo("WINNER!", "You won the game!") #
+        mbox.showinfo("WINNER!", "You won the game!")
         app.destroy()
     
     def loser_alert_and_close(self):
-        mbox.showinfo("LOSER!", "You lost the game.") #
+        mbox.showinfo("LOSER!", "You lost the game.")
         app.destroy()
 
     def check_game_over(self):
@@ -327,3 +327,4 @@ if __name__ == "__main__":
     )
 
     app.mainloop()
+
